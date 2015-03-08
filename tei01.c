@@ -1,10 +1,11 @@
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 #include "MT.h"
 
-#define rand_gen 1
 #define rand_static false
 
 static const uint32_t LOW_MAX = ((uint64_t)UINT32_MAX + 1) * 165 / 65536;
@@ -13,6 +14,8 @@ static uint32_t x = 123456789;
 static uint32_t y = 362436069;
 static uint32_t z = 521288629;
 static uint32_t w = 88675123; 
+
+static int rand_gen = 0;
 
 uint32_t xor128(void) { 
   uint32_t t;
@@ -23,6 +26,20 @@ uint32_t xor128(void) {
 }
 
 int main(int argc, char *argv[]) {
+
+  int result = 0;
+  while((result=getopt(argc,argv,"a:"))!=-1){
+    switch(result){
+      case 'a':
+        rand_gen = atoi(optarg);
+        if (rand_gen < 0 || rand_gen > 1) {
+          fprintf(stderr, "Invalid variable.");
+          return EXIT_FAILURE;
+        }
+    }
+  }
+
+
   uint32_t i;
   uint32_t n = 100000000;
 
